@@ -21,7 +21,7 @@ type CEPResponse struct {
 }
 
 func TestGetValidCEP(t *testing.T) {
-	test.Add(validPath, http.StatusOK, CEPResponse{Localidade: "Golândia"})
+	test.When(validPath).ReturnStatusCode(http.StatusOK).ReturnBody(CEPResponse{Localidade: "Golândia"}).Execute()
 
 	cep, err := Get("88888888")
 	fmt.Printf("CEP: %+v, Error: %v\n", cep, err)
@@ -35,8 +35,7 @@ func TestGetValidCEP(t *testing.T) {
 }
 
 func TestGetInvalidCep(t *testing.T) {
-	interceptor := test.Interceptor{}
-	interceptor.Add(invalidPath, http.StatusBadRequest, nil)
+	test.When(invalidPath).ReturnStatusCode(http.StatusBadRequest).Execute()
 
 	cep, err := Get("invalid")
 	fmt.Printf("CEP: %+v, Error: %v\n", cep, err)

@@ -7,9 +7,32 @@ import (
 	"strings"
 )
 
-func Add(requestPath string, statusCode int, body interface{}) {
+type Builder struct {
+	requestPath string
+	statusCode  int
+	body        interface{}
+}
+
+func (b *Builder) Execute() {
 	interceptor := &Interceptor{}
-	interceptor.Add(requestPath, statusCode, body)
+	interceptor.Add(b.requestPath, b.statusCode, b.body)
+	http.DefaultClient = &http.Client{Transport: interceptor}
+}
+
+func (b *Builder) ReturnStatusCode(statusCode int) *Builder {
+	b.statusCode = statusCode
+	return b
+}
+
+func (b *Builder) ReturnBody(body interface{}) *Builder {
+	b.body = body
+	return b
+}
+
+func When(requestPath string) *Builder {
+	b := &Builder{}
+	b.requestPath = requestPath
+	return b
 }
 
 type Interceptor struct {

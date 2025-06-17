@@ -5,10 +5,13 @@ import (
 	"net/http"
 
 	"github.com/black-dev-x/go-lab-cloud-run/cep"
+	"github.com/black-dev-x/go-lab-cloud-run/config"
+	"github.com/black-dev-x/go-lab-cloud-run/temperature"
 	"github.com/black-dev-x/go-lab-cloud-run/weather"
 )
 
 func main() {
+	config.Load()
 	http.HandleFunc("GET /{cep}", func(w http.ResponseWriter, r *http.Request) {
 		cepInput := r.PathValue("cep")
 		cepResponse, err := cep.Get(cepInput)
@@ -27,8 +30,9 @@ func main() {
 			http.Error(w, err.Error(), 500)
 			return
 		}
+		temp := temperature.New(weather.Current.TempC)
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(weather)
+		json.NewEncoder(w).Encode(temp)
 	})
 	http.ListenAndServe(":8080", nil)
 }

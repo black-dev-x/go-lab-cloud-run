@@ -8,7 +8,7 @@ import (
 
 var WEATHER_API_KEY string
 
-func init() {
+func Load() {
 	if file, err := os.Open(".env"); err == nil {
 		defer file.Close()
 		scanner := bufio.NewScanner(file)

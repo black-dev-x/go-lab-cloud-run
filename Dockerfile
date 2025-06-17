@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN CGO_ENABLED=0 go build -o main
 
-FROM scratch
+FROM alpine:latest
 WORKDIR /app
 COPY --from=build /app/main /app/main
 

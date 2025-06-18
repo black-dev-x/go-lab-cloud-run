@@ -22,6 +22,10 @@ type CEP struct {
 	Siafi       string `json:"siafi"`
 }
 
+type ErrorResponse struct {
+	Erro bool `json:"erro"`
+}
+
 const NotFound = "can not find zipcode"
 const Invalid = "invalid zipcode"
 
@@ -44,7 +48,14 @@ func Get(cep string) (*CEP, error) {
 		return nil, fmt.Errorf("unexpected status code from zipcode service: %d", httpResp.StatusCode)
 	}
 
+	var errorResponse ErrorResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&errorResponse)
+	if err != nil {
+		return nil, fmt.Errorf(NotFound)
+	}
+
 	var response CEP
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
+
 	return &response, err
 }

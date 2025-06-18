@@ -48,14 +48,17 @@ func Get(cep string) (*CEP, error) {
 		return nil, fmt.Errorf("unexpected status code from zipcode service: %d", httpResp.StatusCode)
 	}
 
-	var errorResponse ErrorResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&errorResponse)
-	if err != nil {
+	var check map[string]interface{}
+	json.NewDecoder(httpResp.Body).Decode(&check)
+
+	if check["erro"] != nil {
 		return nil, fmt.Errorf(NotFound)
 	}
 
+	data, _ := json.Marshal(check)
+
 	var response CEP
-	err = json.NewDecoder(httpResp.Body).Decode(&response)
+	err = json.Unmarshal(data, &response)
 
 	return &response, err
 }
